@@ -16,30 +16,34 @@ known_qualities_physical = {
     'Fuel':          { 'id': 102027, 'full_name': 'Fuel'                              },
     'Colonist':      { 'id': 102021, 'full_name': 'Tomb Colonist'                     },
     'Silk':          { 'id': 102015, 'full_name': 'Bolts of Spider-Silk'              },
-    'Human Souls':   { 'id': 102016, 'full_name': 'Crate of Human Souls'              },
+    'HumanSouls':    { 'id': 102016, 'full_name': 'Crate of Human Souls'              },
     'Honey':         { 'id': 102017, 'full_name': 'Firkin of Prisoner\’s honey'       },
     'Coffee':        { 'id': 102018, 'full_name': 'Sack of Darkdrop Coffee Beans'     },
     'Linen':         { 'id': 102019, 'full_name': 'Bale of Parabola-Linen'            },
     'Wine':          { 'id': 102020, 'full_name': 'Cask of Mushroom Wine'             },
     'Dice':          { 'id': 105969, 'full_name': 'Devilbone Dice'                    },
-    'Ivoryo':        { 'id': 105973, 'full_name': 'Stygian Ivory'                     },
+    'Ivory':         { 'id': 105973, 'full_name': 'Stygian Ivory'                     },
     'Salt':          { 'id': 105974, 'full_name': 'Mutersalt'                         },
     'Longbox':       { 'id': 105976, 'full_name': 'Soothe and Cooper Longbox'         },
     'Scintillack':   { 'id': 107719, 'full_name': 'Scintillack'                       },
-    'Strange Catch': { 'id': 108654, 'full_name': 'Strange Catch'                     },
+    'StrangeCatch':  { 'id': 108654, 'full_name': 'Strange Catch'                     },
     'Candles':       { 'id': 110233, 'full_name': 'Foxfire Candles'                   },
     'Zzoup':         { 'id': 110547, 'full_name': 'Zzoup'                             },
     'Solacefruit':   { 'id': 111725, 'full_name': 'Solacefruit'                       },
     'Flares':        { 'id': 113263, 'full_name': 'Flares'                            },
-    'Filled Bx':     { 'id': 113966, 'full_name': 'Sunlight-Filled Mirrorcatch Box'   },
+    'FilledBox':     { 'id': 113966, 'full_name': 'Sunlight-Filled Mirrorcatch Box'   },
     'Dawn':          { 'id': 114995, 'full_name': 'Element of Dawn'                   },
-    'Empty Box':     { 'id': 115025, 'full_name': 'Empty Mirrorcatch box'             },
+    'EmptyBox':      { 'id': 115025, 'full_name': 'Empty Mirrorcatch box'             },
 }
 
 # Weight = 0
 known_qualities_ethereal = {
     'Echoes':                           { 'id': 102028, 'full_name': 'Echoes' },
 }
+
+def list_qualities(qlist):
+    for (name, qdata) in qlist.items():
+        print("%14s (%06d) - %-40s" % (name, qdata['id'], qdata['full_name']))
 
 def print_quality(qual, name, qdata):
     level = qual['Level']
@@ -149,15 +153,26 @@ def find_quality(jsondata, associd):
     print("Posessed Quality ID", associd, "not found")
     return None
 
+def update_quality_by_id(jsondata, qid, level):
+    qual = find_quality(jsondata, qid)
+    if qual:
+        if qual['Level']:
+            print('Increasing level of %d (currently %d) by %d' % (qid, qual['Level'], level))
+            qual['Level'] += level
+        else:
+            print('Un-set quality %d will have level set to %d' % (qid, level))
+            qual['Level'] = level
+        print('Level of %d now %d' % (qid, qual['Level']))
+
 def update_quality(jsondata, name, level):
     try:
         qdata = known_qualities_physical[name]
     except:
         qdata = known_qualities_ethereal[name]
-    
+
     associd = qdata['id']
     qual = find_quality(jsondata, associd)
-    current = qual['Level'] 
+    current = qual['Level']
     print('Increasing level of %s (%d) from %d to %d' % (name, associd, current, level))
     qual['Level'] = level
 
@@ -166,7 +181,7 @@ def process_args():
         prog='The Bloomin Casual',
         description='''
 You pass by "The Storied Mode" public house just outside the docks, it beckons you in
-like an old friend. You walk to the bar, meet eyes with the bartender, and ask for a 
+like an old friend. You walk to the bar, meet eyes with the bartender, and ask for a
 large pitcher of Bloomin Casual.
 
 He serves it up luke warm, just as you like it.
@@ -183,7 +198,7 @@ He serves it up luke warm, just as you like it.
     parser.add_argument('-b', '--backup',
                         type=bool,
                         default=True,
-                        help="Back up the input json file. Default: True") 
+                        help="Back up the input json file. Default: True")
     parser.add_argument('-p', '--pretty',
                         action='store_true',
                         help='Load input and pretty print json to output file. When -p used with out any arguments the autosave will be pretty printed and saved in place')
@@ -200,15 +215,22 @@ He serves it up luke warm, just as you like it.
                         default=None,
                         help="Add dark drop coffee beans (integer)")
     parser.add_argument('-l', '--list',
+                        action='store_true',
+                        help="List known qualities")
+    parser.add_argument('-a', '--add',
                         type=str,
                         default=None,
-                        help="List parameters that match provided string")
+                        help="Increase the level of the named quality (can also use ID)")
+    parser.add_argument('-n', '--num',
+                        type=int,
+                        default=None,
+                        help="Add 'n' of the quality named by the --add option")
 
     if len(sys.argv)==1:
         parser.print_help(sys.stderr)
         sys.exit(1)
     return parser.parse_args()
-    
+
 def main():
     args = process_args()
 
@@ -217,6 +239,11 @@ def main():
 
     rootpath = input_file.parent
     basename = input_file.stem
+
+    if args.list:
+        list_qualities(known_qualities_physical)
+        list_qualities(known_qualities_ethereal)
+        sys.exit(1)
 
     if args.backup:
         backup_date=datetime.now().strftime("%Y%m%d_%H%M")
@@ -241,16 +268,28 @@ def main():
     #
     # Update posessed qualities
     #
+    updated=False
     if args.coffee:
         update_quality(jsondata, 'Coffee', args.coffee)
         updated=True
-    
+
     if args.fuel:
         update_quality(jsondata, 'Fuel', args.fuel)
         updated=True
-    
+
     if args.supplies:
         update_quality(jsondata, 'Supplies', args.supplies)
+        updated=True
+
+    if args.add:
+        num = args.num if args.num is not None else 1
+        try:
+            # Check if it's an ID first
+            qid = int(args.add)
+            update_quality_by_id(jsondata, qid, num)
+        except:
+            # If not an ID, then treat as name
+            update_quality(jsondata, args.add, num)
         updated=True
 
     #
