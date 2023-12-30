@@ -7,6 +7,14 @@ pitcher of Bloomin Casual. He serves it up luke warm, just as you like it.
 
 This is a script for editing the JSON save files for the game [Sunless Sea](https://www.failbettergames.com/games/sunless-sea). I love the game, the lore, the stories, but I'm impatient and not a good captain!
 
+The save game files can be found in the following locations:
+
+__Windows__
+`c:\users\[username]\AppData\LocallOW\Failbetter Games\Sunless Sea\saves`
+
+__Linux__
+`${HOME}/.config/unity3d/Failbetter Games/Sunless Sea/saves`
+
 ## Usage
 
 ```
