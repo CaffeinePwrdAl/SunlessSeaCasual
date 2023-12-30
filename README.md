@@ -1,3 +1,5 @@
+![Logo for Sunless Sea - The Bloomin Casual. A fancy cocktail glass containing a mysterious and luminous drink, an eyeball, and a tipsy looking purple mushroom stands on a dark wooden table](https://github.com/CaffeinePwrdAl/SunlessSeaCasual/blob/main/Bloomin%20Casual.png?raw=true)
+
 # About
 
 You pass by "The Storied Mode" public house just outside the docks, it beckons you in like an old friend. You walk to the bar, meet eyes with the bartender, and ask for a large
@@ -12,7 +14,7 @@ $ python bloomin_casual.py --help
 usage: The Bloomin Casual [-h] [-i INPUT] [-o OUTPUT] [-b BACKUP] [-p] [-f FUEL] [-s SUPPLIES] [-c COFFEE] [-l] [-a ADD] [-n NUM]
 
 You pass by "The Storied Mode" public house just outside the docks, it beckons you in like an old friend. You walk to the bar, meet eyes with the bartender, and ask for a large
-pitcher of Bloomin Casual. He serves it up luke warm, just as you like it.
+glass of Bloomin Casual. He serves it up luke warm, just as you like it.
 
 options:
   -h, --help            show this help message and exit
